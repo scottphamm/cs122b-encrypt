@@ -14,6 +14,21 @@ To run it on AWS under command line:
 2. `cd cs122b-project3-encryption-example`
 3. change your mysql username and password in [UpdateSecurePassword.java](src/main/java/UpdateSecurePassword.java) and [VerifyPassword.java](src/main/java/VerifyPassword.java)
 4. `mvn compile`
-5. to run `UpdateSecurePassword`: `mvn exec:java -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="UpdateSecurePassword"`
-6. to run `VerifyPassword`: `mvn exec:java -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="VerifyPassword"`
-7. When execute java program using maven in command line, if the program doesn't exist after it finishes, you can just kill it.
+5. Have a backup of the "customers" table, run the following:
+<br>`create table customers_backup(`
+   <br>`id integer auto_increment primary key,`
+   <br>`firstName varchar(50) not null,`
+   <br>`lastName varchar(50) not null,`
+   <br>`ccId varchar(20) not null,`
+   <br>`address varchar(200) not null,`
+   <br>`email varchar(50) not null,`
+   <br>`password varchar(20) not null,`
+   <br>`foreign key(ccId) references creditcards(id));`
+<br>`insert into customers_backup select * from customers;`
+6. to run `UpdateSecurePassword`:
+   <br>`mvn exec:java -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="UpdateSecurePassword"`
+7. to run `VerifyPassword`:
+   <br>`mvn exec:java -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="VerifyPassword"`
+8. When execute java program using maven in command line, if the program doesn't exist after it finishes, you can just kill it.
+9. To recover the data in the "customers" table, run the following:
+   <br>`update customers C1 set password = (select password from customers_backup C2 where C2.id = C1.id);`
